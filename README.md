@@ -8,11 +8,22 @@ Para ejecutar el proyecto, sigue los siguientes pasos:
 docker compose up --build
 ```
 
-2. Envia una petición al servidor send en `localhost:3000`:
+2. Envia una petición tipo `POST` al servidor send en `localhost:3000`:
 
-```bash
-    curl -X POST -d "Hola, ¿cómo estás?" http://localhost:3000
+- Cuerpo para mensaje:
+
+```
+  {
+    "type": "message",
+    "content": "Hola mundo"
+  }
 ```
 
-Puedes verificar el mensaje en la consola.
-![alt text](image.png)
+- Cuerpo para número:
+
+```
+  {
+    "type": "number",
+    "content": "123456789"
+  }
+```
