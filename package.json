@@ -1,0 +1,16 @@
+{
+  "name": "rabbitmq-test-1",
+  "version": "1.0.0",
+  "description": "- Iniciar el contenedor de rabbitmq",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.4"
+  }
+}
