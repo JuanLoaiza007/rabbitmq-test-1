@@ -2,10 +2,14 @@ version: '3.8'
 
 services:
   rabbitmq:
-    image: rabbitmq:3.10-management-alpine
+    build:
+      context: ./rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user # Esto deberia ser una variable de entorno
+      RABBITMQ_DEFAULT_PASS: password # Esto deberia ser una variable de entorno
 
   send:
     build:

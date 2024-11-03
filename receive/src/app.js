@@ -21,7 +21,7 @@ async function connectWithRetry(url) {
 }
 
 (async () => {
-  const connection = await connectWithRetry("amqp://rabbitmq");
+  const connection = await connectWithRetry("amqp://user:password@rabbitmq"); // En un proyecto real el usuario y contraseña no deberian exponerse aqui
   const channel = await connection.createChannel();
   const queue = "messages";
 
