@@ -19,10 +19,26 @@ services:
     ports:
       - "3000:3000"
 
-  receive:
+  receive1:
     build:
-      context: ./receive
+      context: ./receive1
     depends_on:
       - rabbitmq
     ports:
       - "3001:3001"
+
+  receive2:
+    build:
+      context: ./receive2
+    depends_on:
+      - rabbitmq
+    ports:
+      - "3002:3002"
+
+  receive3:
+    build:
+      context: ./receive3
+    depends_on:
+      - rabbitmq
+    ports:
+      - "3003:3003"

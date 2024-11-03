@@ -21,24 +21,35 @@ async function connectWithRetry(url) {
 }
 
 (async () => {
-  const connection = await connectWithRetry("amqp://user:password@rabbitmq"); // En un proyecto real el usuario y contraseña no deberian exponerse aqui
-  const channel = await connection.createChannel();
-  const queue = "messages";
+  const connection = await connectWithRetry("amqp://user:password@rabbitmq");
+  const channelMessages = await connection.createChannel();
+  const channelNumbers = await connection.createChannel();
 
-  await channel.assertQueue(queue, { durable: false }); // durable: disk persistence
+  const messageQueue = "messages";
+  const numberQueue = "numbers";
 
-  // Crear un servidor HTTP
+  await channelMessages.assertQueue(messageQueue, { durable: false });
+  await channelNumbers.assertQueue(numberQueue, { durable: false });
+
   const server = http.createServer((req, res) => {
-    if (req.method === "POST") {
-      let body = "";
+    let body = "";
 
+    if (req.method === "POST") {
       req.on("data", (chunk) => {
-        body += chunk.toString(); // Convertir Buffer a string
+        body += chunk.toString();
       });
 
       req.on("end", () => {
-        channel.sendToQueue(queue, Buffer.from(body));
-        console.log(`[x] Sent ${body}`);
+        const { type, content } = JSON.parse(body); // Suponemos que el cuerpo tiene tipo y contenido
+
+        if (type === "message") {
+          channelMessages.sendToQueue(messageQueue, Buffer.from(content));
+          console.log(`[x] Sent message: ${content}`);
+        } else if (type === "number") {
+          channelNumbers.sendToQueue(numberQueue, Buffer.from(content));
+          console.log(`[x] Sent number: ${content}`);
+        }
+
         res.writeHead(200, { "Content-Type": "text/plain" });
         res.end("Message sent to RabbitMQ");
       });
