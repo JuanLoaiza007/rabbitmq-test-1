@@ -1,4 +1,5 @@
 import { connect } from "amqplib";
+import http from "http";
 
 // Función para esperar un tiempo específico
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -27,7 +28,23 @@ async function connectWithRetry(url) {
 
   await channel.assertQueue(queue, { durable: false });
 
+  // Crear un servidor HTTP
+  const server = http.createServer((req, res) => {
+    if (req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "text/plain" });
+      res.end("Receive service is running");
+    } else {
+      res.writeHead(405, { "Content-Type": "text/plain" });
+      res.end("Method Not Allowed");
+    }
+  });
+
   channel.consume(queue, async (msg) => {
     console.log(`[x] Received ${msg.content.toString()}`);
+    // Aquí podrías hacer algo con el mensaje recibido
+  });
+
+  server.listen(3001, () => {
+    console.log("Receive server is listening on port 3001");
   });
 })();

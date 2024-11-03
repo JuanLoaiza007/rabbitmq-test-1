@@ -1,4 +1,6 @@
 import { connect } from "amqplib";
+import http from "http";
+import url from "url";
 
 // Función para esperar un tiempo específico
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,12 +25,32 @@ async function connectWithRetry(url) {
 (async () => {
   const connection = await connectWithRetry("amqp://rabbitmq");
   const channel = await connection.createChannel();
-
   const queue = "messages";
-  const message = "Hello World!";
 
   await channel.assertQueue(queue, { durable: false }); // durable: disk persistence
 
-  channel.sendToQueue(queue, Buffer.from(message));
-  console.log(`[x] Sent ${message}`);
+  // Crear un servidor HTTP
+  const server = http.createServer((req, res) => {
+    if (req.method === "POST") {
+      let body = "";
+
+      req.on("data", (chunk) => {
+        body += chunk.toString(); // Convertir Buffer a string
+      });
+
+      req.on("end", () => {
+        channel.sendToQueue(queue, Buffer.from(body));
+        console.log(`[x] Sent ${body}`);
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.end("Message sent to RabbitMQ");
+      });
+    } else {
+      res.writeHead(405, { "Content-Type": "text/plain" });
+      res.end("Method Not Allowed");
+    }
+  });
+
+  server.listen(3000, () => {
+    console.log("Server is listening on port 3000");
+  });
 })();

@@ -12,9 +12,13 @@ services:
       context: ./send
     depends_on:
       - rabbitmq
+    ports:
+      - "3000:3000"
 
   receive:
     build:
       context: ./receive
     depends_on:
       - rabbitmq
+    ports:
+      - "3001:3001"
