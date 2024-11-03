@@ -1,8 +1,6 @@
 import { connect } from "amqplib";
 import http from "http";
-import url from "url";
 
-// Función para esperar un tiempo específico
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let delay = 10000;
@@ -12,7 +10,7 @@ async function connectWithRetry(url) {
   while (retries) {
     try {
       const connection = await connect(url);
-      return connection; // Devuelve la conexión si tiene éxito
+      return connection;
     } catch (err) {
       console.error(`Error connecting to RabbitMQ: ${err}. Retrying...`);
       retries -= 1;

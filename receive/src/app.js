@@ -1,7 +1,6 @@
 import { connect } from "amqplib";
 import http from "http";
 
-// Función para esperar un tiempo específico
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let delay = 10000;
@@ -11,7 +10,7 @@ async function connectWithRetry(url) {
   while (retries) {
     try {
       const connection = await connect(url);
-      return connection; // Devuelve la conexión si tiene éxito
+      return connection;
     } catch (err) {
       console.error(`Error connecting to RabbitMQ: ${err}. Retrying...`);
       retries -= 1;
@@ -28,7 +27,6 @@ async function connectWithRetry(url) {
 
   await channel.assertQueue(queue, { durable: false });
 
-  // Crear un servidor HTTP
   const server = http.createServer((req, res) => {
     if (req.method === "GET") {
       res.writeHead(200, { "Content-Type": "text/plain" });
@@ -41,7 +39,6 @@ async function connectWithRetry(url) {
 
   channel.consume(queue, async (msg) => {
     console.log(`[x] Received ${msg.content.toString()}`);
-    // Aquí podrías hacer algo con el mensaje recibido
   });
 
   server.listen(3001, () => {
