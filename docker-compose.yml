@@ -26,6 +26,14 @@ services:
       - rabbitmq
     ports:
       - "3001:3001"
+    
+  receive4:
+    build:
+      context: ./receive4
+    depends_on:
+      - rabbitmq
+    ports:
+      - "3004:3004"
 
   receive2:
     build:
